@@ -1,23 +1,29 @@
 <?php
-session_start();
 include "koneksi.php";
 
-
-if(isset($_POST['submit'])){
+if(isset($_POST['submit']) || isset($_POST['submit'])){
 
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $insert = mysqli_query($koneksi,"INSERT INTO users(username,password) VALUES('$username','$password')");
 
-    if($insert){
-        echo "Register berhasil";
+    $query = mysqli_query($koneksi, "SELECT * FROM users WHERE username='$username'");
+    $cek = mysqli_num_rows($query);
+
+    if($cek > 0){
+
+        echo "Username sudah digunakan, silakan pilih yang lain!";
     } else {
-        echo "Register gagal";
+        $insert = mysqli_query($koneksi, "INSERT INTO users(username, password, role) VALUES('$username', '$password', 'pasien')");
+        if($insert){
+            header("Location: login.php?pesan=register_sukses");
+            exit;
+        } else {
+            echo "Register gagal, silakan coba lagi.";
+        }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>

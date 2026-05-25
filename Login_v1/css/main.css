@@ -163,14 +163,13 @@ iframe {
   justify-content: center;
   align-items: center;
 
-  background: #2d2b7c;
+  background:#1d64e9;
 }
 
 .wrap-login100 {
   width: 950px;
   height: 560px;
-
-  background: #3b3b8f;
+  background: #ffffff;
   border-radius: 20px;
 
   display: flex;

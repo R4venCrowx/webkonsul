@@ -7,9 +7,7 @@ if(isset($_POST['login'])){
     $password = $_POST['password'];
 	$error = "";
 
-    $query = mysqli_query($koneksi,
-    "SELECT * FROM users 
-    WHERE username='$username' 
+    $query = mysqli_query($koneksi,"SELECT * FROM users WHERE username='$username' 
     AND password='$password'");
 
     $cek = mysqli_num_rows($query);
@@ -18,6 +16,7 @@ if(isset($_POST['login'])){
 		
         $data = mysqli_fetch_assoc($query);
 
+		$_SESSION['sudah_login'] = true;
         $_SESSION['username'] = $data['username'];
         $_SESSION['role'] = $data['role'];
 
@@ -71,9 +70,7 @@ if(isset($_POST['login'])){
 					<span class="login100-form-title">
 						Member Login
 					</span>
-                    <p class="login-subtitle">
-    Sign in with email address
-</p>
+                    <p class="login-subtitle">Please log in to book an appointment.</p>
 
 					<div class="wrap-input100 validate-input" data-validate = "Valid username is required">
 						<input class="input100" type="text" name="username" placeholder="username/@gmail.com"  autocomplete="new-password" required>

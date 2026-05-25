@@ -1,1093 +1,1099 @@
+<?php 
+session_start(); 
+if (isset($_SESSION['sudah_login'])) {
+    echo '<li><a href="appointment.php" class="active">Appointment</a></li>';
+} else {
+    echo '<li><a href="../login.php">Book Appointment</a></li>';
+}
+?>
+
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Techno Doct - Tanya Sekarang, Solusi Digital Langsung Datang</title>
-    <!-- Google Fonts & FontAwesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* --- DESIGN SYSTEM & VARIABLES --- */
-        :root {
-            --primary: #2d2b7c;
-            --accent: #5b51ec;
-            --bg-base: #e2e3f3;
-            --text-main: #000000;
-            --text-muted: #4a4a6a;
-            --secondary-panel: rgba(245, 245, 243, 0.6);
-            --glass-bg: rgba(255, 255, 255, 0.45);
-            --glass-border: rgba(255, 255, 255, 0.6);
-            --glass-glow: rgba(91, 81, 236, 0.15);
-            --card-shadow: 0 8px 32px 0 rgba(45, 43, 124, 0.08);
-            --transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            --radius: 20px;
-        }
-
-        /* Dark Mode Theme overrides */
-        [data-theme="dark"] {
-            --primary: #9d96ff;
-            --accent: #7c73ff;
-            --bg-base: #0b0a1a;
-            --text-main: #ffffff;
-            --text-muted: #b0b0cc;
-            --secondary-panel: rgba(20, 19, 35, 0.6);
-            --glass-bg: rgba(20, 19, 35, 0.55);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-glow: rgba(124, 115, 255, 0.2);
-            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        /* --- BASE STYLES --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: var(--bg-base);
-            color: var(--text-main);
-            overflow-x: hidden;
-            transition: background var(--transition), color var(--transition);
-            line-height: 1.6;
-        }
-
-        /* Neon abstract background blobs for Glasspunk aesthetic */
-        .bg-glows {
-            position: fixed;
-            width: 100vw;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            pointer-events: none;
-            overflow: hidden;
-        }
-        .glow-1 {
-            position: absolute;
-            top: -10%; left: -10%;
-            width: 50vw; height: 50vw;
-            background: radial-gradient(circle, rgba(91,81,236,0.3) 0%, rgba(0,0,0,0) 70%);
-            filter: blur(80px);
-        }
-        .glow-2 {
-            position: absolute;
-            bottom: 10%; right: -5%;
-            width: 45vw; height: 45vw;
-            background: radial-gradient(circle, rgba(45,43,124,0.25) 0%, rgba(0,0,0,0) 70%);
-            filter: blur(100px);
-        }
-
-        /* --- GLASSPUNK UTILITIES --- */
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--card-shadow), inset 0 1px 1px rgba(255,255,255,0.2);
-            border-radius: var(--radius);
-        }
-
-        .section-compact {
-            padding: 40px 5%;
-            position: relative;
-        }
-
-        .section-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-align: center;
-            margin-bottom: 30px;
-            letter-spacing: -0.5px;
-        }
-
-        /* --- SCROLL ANIMATIONS --- */
-        .fade-in-element {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .fade-in-element.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- NAVIGATION --- */
-        .navbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 80px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 5%;
-            z-index: 1000;
-            border-radius: 0;
-            border-top: none;
-            border-left: none;
-            border-right: none;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo i {
-            color: var(--accent);
-            text-shadow: 0 0 10px var(--glass-glow);
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: var(--transition);
-            position: relative;
-            padding: 5px 0;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0;
-            width: 0; height: 2px;
-            background: var(--accent);
-            transition: var(--transition);
-        }
-
-        .nav-links a:hover::after,
-        .nav-links a.active::after {
-            width: 100%;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .theme-toggle, .hamburger {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            font-size: 1.3rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover {
-            background: rgba(91, 81, 236, 0.15);
-            color: var(--accent);
-        }
-
-        .hamburger {
-            display: none;
-        }
-
-        /* --- HERO SECTION --- */
-        #hero {
-            padding-top: 140px;
-            padding-bottom: 60px;
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .hero-text h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            line-height: 1.15;
-            color: var(--primary);
-            margin-bottom: 15px;
-            letter-spacing: -1px;
-        }
-
-        .hero-tagline {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-
-        .hero-description {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-            max-width: 600px;
-        }
-
-        .cta-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 30px;
-            background: var(--accent);
-            color: white;
-            text-decoration: none;
-            font-weight: 700;
-            border-radius: 14px;
-            box-shadow: 0 4px 15px rgba(91, 81, 236, 0.4);
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
-        }
-
-        .cta-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(91, 81, 236, 0.6);
-            background: var(--primary);
-        }
-
-        .hero-image-container {
-            position: relative;
-            width: 100%;
-            height: 420px;
-        }
-
-        .hero-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: var(--radius);
-            border: 1px solid var(--glass-border);
-        }
-
-        .floating-badge {
-            position: absolute;
-            bottom: 30px;
-            left: -30px;
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            animation: float 4s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-        }
-
-        /* --- ABOUT & SERVICES (GRID) --- */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .feature-card {
-            padding: 35px;
-            transition: var(--transition);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
-            box-shadow: 0 12px 40px var(--glass-glow);
-        }
-
-        .card-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 14px;
-            background: rgba(91, 81, 236, 0.15);
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            margin-bottom: 20px;
-        }
-
-        .feature-card h3 {
-            font-size: 1.4rem;
-            color: var(--primary);
-            margin-bottom: 12px;
-        }
-
-        .feature-card p {
-            color: var(--text-muted);
-            font-size: 0.98rem;
-        }
-
-        /* --- CAROUSEL / TESTIMONIALS --- */
-        .carousel-container {
-            position: relative;
-            max-width: 900px;
-            margin: 0 auto;
-            overflow: hidden;
-            padding: 20px 0;
-        }
-
-        .carousel-track {
-            display: flex;
-            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            width: 100%;
-        }
-
-        .testimonial-slide {
-            min-width: 100%;
-            padding: 40px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        .testi-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 20px;
-            border: 3px solid var(--accent);
-        }
-
-        .testi-text {
-            font-size: 1.2rem;
-            font-style: italic;
-            color: var(--text-main);
-            margin-bottom: 20px;
-        }
-
-        .testi-name {
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .testi-role {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .carousel-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            z-index: 10;
-        }
-
-        .carousel-arrow:hover {
-            background: var(--accent);
-            color: white;
-        }
-
-        .arrow-left { left: 10px; }
-        .arrow-right { right: 10px; }
-
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            opacity: 0.4;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .dot.active {
-            opacity: 1;
-            background: var(--accent);
-            width: 24px;
-            border-radius: 5px;
-        }
-
-        /* --- FAQ ACCORDION --- */
-        .faq-wrapper {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .faq-item {
-            border-radius: 15px;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .faq-trigger {
-            width: 100%;
-            padding: 22px 30px;
-            background: none;
-            border: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-align: left;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary);
-            cursor: pointer;
-        }
-
-        .faq-icon {
-            transition: var(--transition);
-            color: var(--accent);
-        }
-
-        .faq-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, padding 0.4s ease;
-            padding: 0 30px;
-            color: var(--text-muted);
-            font-size: 0.98rem;
-        }
-
-        .faq-item.active .faq-content {
-            padding-bottom: 22px;
-        }
-
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
-        }
-
-        /* --- CONTACT & MAPS --- */
-        .contact-container {
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 30px;
-        }
-
-        .contact-form-panel, .map-panel {
-            padding: 35px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            color: var(--text-main);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 14px 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            color: var(--text-main);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        [data-theme="dark"] .form-control {
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--glass-glow);
-        }
-
-        .error-msg {
-            color: #ff4d4d;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .map-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .map-iframe-wrapper {
-            width: 100%;
-            height: 100%;
-            min-height: 250px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-        }
-
-        /* --- MULTI-COLUMN FOOTER --- */
-        footer {
-            background: var(--secondary-panel);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--glass-border);
-            padding: 60px 5% 30px;
-            color: var(--text-main);
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .footer-col h4 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-
-        .footer-col p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 12px;
-        }
-
-        .footer-links a {
-            text-decoration: none;
-            color: var(--text-muted);
-            transition: var(--transition);
-            font-size: 0.95rem;
-        }
-
-        .footer-links a:hover {
-            color: var(--accent);
-            padding-left: 5px;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .social-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .social-btn:hover {
-            background: var(--accent);
-            color: white;
-            transform: translateY(-3px);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 25px;
-            border-top: 1px solid var(--glass-border);
-            font-size: 0.88rem;
-            color: var(--text-muted);
-        }
-
-        /* --- RESPONSIVE DESIGN (MEDIA QUERIES) --- */
-        @media (max-width: 1024px) {
-            #hero {
-                grid-template-columns: 1fr;
-                text-align: center;
-                padding-top: 120px;
-            }
-            .hero-text h1 { font-size: 2.8rem; }
-            .hero-description { margin: 0 auto 30px; }
-            .hero-image-container { height: 350px; max-width: 600px; margin: 0 auto; }
-            .floating-badge { left: 20px; }
-            .contact-container { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
-        }
-
-        @media (max-width: 768px) {
-            .hamburger { display: flex; }
-            .nav-links {
-                position: fixed;
-                top: 80px; left: -100%;
-                width: 100%; height: calc(100vh - 80px);
-                background: var(--glass-bg);
-                backdrop-filter: blur(20px);
-                flex-direction: column;
-                padding: 50px 0;
-                transition: var(--transition);
-                border-top: 1px solid var(--glass-border);
-            }
-            .nav-links.active { left: 0; }
-            .footer-grid { grid-template-columns: 1fr; gap: 30px; }
-            .section-title { font-size: 1.8rem; }
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Konsultasi Kesehatanmu</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="Homepage/assets/img/favicon.png" rel="icon">
+  <link href="Homepage/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
+    rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="Homepage/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="Homepage/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="Homepage/assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="Homepage/assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="Homepage/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="Homepage/assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="Homepage/assets/css/main.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Clinic
+  * Template URL: https://bootstrapmade.com/clinic-bootstrap-template/
+  * Updated: Jul 23 2025 with Bootstrap v5.3.7
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
 </head>
-<body>
 
-    <!-- Neon Glow System -->
-    <div class="bg-glows">
-        <div class="glow-1"></div>
-        <div class="glow-2"></div>
+<body class="index-page">
+
+  <header id="header" class="header fixed-top">
+
+    <div class="topbar d-flex align-items-center dark-background">
+      <div class="container d-flex justify-content-center justify-content-md-between">
+        <div class="contact-info d-flex align-items-center">
+          <i class="bi bi-envelope d-flex align-items-center"><a
+              href="mailto:contact@example.com">contact@example.com</a></i>
+          <i class="bi bi-phone d-flex align-items-center ms-4"><span>+1 5589 55488 55</span></i>
+        </div>
+        <div class="social-links d-none d-md-flex align-items-center">
+          <a href="#!" class="twitter"><i class="bi bi-twitter-x"></i></a>
+          <a href="#!" class="facebook"><i class="bi bi-facebook"></i></a>
+          <a href="#!" class="instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#!" class="linkedin"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+    </div><!-- End Top Bar -->
+
+    <div class="branding d-flex align-items-cente">
+
+      <div class="container position-relative d-flex align-items-center justify-content-between">
+        <a href="../index.php" class="logo d-flex align-items-center">
+          <!-- Uncomment the line below if you also wish to use an image logo -->
+          <img src="assets/img/logo.webp" alt=""> 
+          <h1 class="sitename">Techno Doct</h1>
+        </a>
+
+        <nav id="navmenu" class="navmenu">
+          <ul>
+            <li><a href="../index.php"class="active">Home</a></li>
+            <li><a href="Homepage/about.html">About</a></li>
+            <li><a href="Homepage/departments.html">Departments</a></li>
+            <li><a href="Homepage/services.html">Services</a></li>
+            <li><a href="Homepage/doctors.html">Doctors</a></li>
+            <li class="dropdown"><a href="#"><span>More Pages</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="Homepage/department-details.html">Department Details</a></li>
+              <li><a href="Homepage/service-details.html">Service Details</a></li>
+              <?php if (isset($_SESSION['sudah_login'])) : ?>
+    <li><a href="Homepage/appointment.php">Book Appointment</a></li>
+<?php else : ?>
+    <li><a href="login.php">Book Appointment</a></li>
+<?php endif; ?>
+              <li><a href="Homepage/testimonials.html">Testimonials</a></li>
+              <li><a href="Homepage/faq.html">Frequently Asked Questions</a></li>
+              <li><a href="Homepage/gallery.html">Gallery</a></li>
+              <li><a href="Homepage/terms.html">Terms</a></li>
+              <li><a href="Homepage/privacy.html">Privacy</a></li>
+              <li><a href="Homepage/404.html">404</a></li>
+            </ul>
+            </li>
+            <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+              <ul>
+                <li><a href="#">Dropdown 1</a></li>
+                <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                  <ul>
+                    <li><a href="#">Deep Dropdown 1</a></li>
+                    <li><a href="#">Deep Dropdown 2</a></li>
+                    <li><a href="#">Deep Dropdown 3</a></li>
+                    <li><a href="#">Deep Dropdown 4</a></li>
+                    <li><a href="#">Deep Dropdown 5</a></li>
+                  </ul>
+                </li>
+                <li><a href="#">Dropdown 2</a></li>
+                <li><a href="#">Dropdown 3</a></li>
+                <li><a href="#">Dropdown 4</a></li>
+              </ul>
+            </li>
+            <li><a href="Homepage/contact.html">Contact</a></li>
+          </ul>
+          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+
+      </div>
+
     </div>
 
-    <!-- Fixed Glass Navigation Bar -->
-    <nav class="navbar glass-panel">
-        <a href="#hero" class="logo">
-            <i class="fa-solid fa-heart-pulse"></i> Techno Doct
-        </a>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="#hero" class="nav-item">Beranda</a></li>
-            <li><a href="#tentang" class="nav-item">Tentang Kami</a></li>
-            <li><a href="#layanan" class="nav-item">Layanan</a></li>
-            <li><a href="#testimoni" class="nav-item">Testimoni</a></li>
-            <li><a href="#faq" class="nav-item">FAQ</a></li>
-            <li><a href="#kontak" class="nav-item">Kontak</a></li>
-        </ul>
-        <div class="nav-actions">
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
-                <i class="fa-solid fa-moon"></i>
-            </button>
-            <button class="hamburger" id="hamburger" aria-label="Open Menu">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-        </div>
-    </nav>
+  </header>
+
+  <main class="main">
 
     <!-- Hero Section -->
-    <header id="hero" class="section-compact">
-        <div class="hero-text fade-in-element">
-            <p class="hero-tagline">Tanya Sekarang, Solusi Digital Langsung Datang.</p>
-            <h1>Navigasi Kesehatan Digital Anda</h1>
-            <p class="hero-description">
-                Dapatkan saran awal kesehatan berbasis kecerdasan buatan terpercaya serta simulasi konsultasi interaktif secara instan di mana pun Anda berada.
-            </p>
-            <a href="#layanan" class="cta-btn">
-                Mulai Konsultasi Gratis <i class="fa-solid fa-arrow-right"></i>
-            </a>
-        </div>
-        <div class="hero-image-container fade-in-element">
-            <img src="https://picsum.photos/id/250/600/450" alt="Digital Healthcare Concept" class="hero-img">
-            <div class="floating-badge glass-panel">
-                <div class="card-icon" style="margin-bottom:0; width:40px; height:40px; font-size:1rem;">
-                    <i class="fa-solid fa-robot"></i>
-                </div>
-                <div>
-                    <h5 style="font-weight:800; font-size:0.9rem;">AI Responsif</h5>
-                    <p style="font-size:0.75rem; color:var(--text-muted);">Tersedia 24/7 non-stop</p>
-                </div>
-            </div>
-        </div>
-    </header>
+    <section id="hero" class="hero section">
 
-    <!-- Tentang Kami Section -->
-    <section id="tentang" class="section-compact fade-in-element">
-        <h2 class="section-title">Tentang Kami</h2>
-        <div class="glass-panel" style="padding: 40px; max-width: 1000px; margin: 0 auto; text-align: center;">
-            <p style="font-size: 1.15rem; color: var(--text-muted); margin-bottom: 20px; font-weight: 500;">
-                Menjadi platform digital terdepan yang berdedikasi dalam memperluas aksesibilitas informasi kesehatan melalui integrasi kecerdasan buatan.
-            </p>
-            <p style="color: var(--text-muted); font-size: 1rem;">
-                Kami berkomitmen untuk menjembatani kesenjangan informasi dengan menyediakan sistem Chatbot cerdas berbasis kata kunci yang responsif, serta menghadirkan pengalaman simulasi konsultasi dokter secara real-time. Melalui pendekatan ini, kami bertujuan untuk membekali masyarakat dengan saran awal yang akurat dan persiapan mental yang matang sebelum melanjutkan ke layanan medis profesional.
-            </p>
-        </div>
-    </section>
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-    <!-- Layanan Section -->
-    <section id="layanan" class="section-compact fade-in-element">
-        <h2 class="section-title">Layanan Utama</h2>
-        <div class="card-grid">
-            <div class="feature-card glass-panel">
-                <div class="card-icon"><i class="fa-solid fa-comments"></i></div>
-                <h3>Chatbot Kesehatan AI</h3>
-                <p>Sistem cerdas berbasis kata kunci pintar yang siap menjawab pertanyaan awal gejala medis Anda secara instan dan interaktif.</p>
-            </div>
-            <div class="feature-card glass-panel">
-                <div class="card-icon"><i class="fa-solid fa-user-doctor"></i></div>
-                <h3>Simulasi Real-Time</h3>
-                <p>Rasakan alur pengalaman simulasi konsultasi bersama dokter digital untuk melatih persiapan mental sebelum pemeriksaan tatap muka.</p>
-            </div>
-            <div class="feature-card glass-panel">
-                <div class="card-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                <h3>Saran Awal Akurat</h3>
-                <p>Dukungan validasi algoritma penyaringan informasi terstruktur demi menjaga agar Anda terhindar dari disinformasi medis berbahaya.</p>
-            </div>
-        </div>
-    </section>
+        <div class="row align-items-center">
+          <div class="col-lg-6">
+            <div class="hero-content">
+              <div class="trust-badges mb-4" data-aos="fade-right" data-aos-delay="200">
+                <div class="badge-item">
+                  <i class="bi bi-shield-check"></i>
+                  <span>Accredited</span>
+                </div>
+                <div class="badge-item">
+                  <i class="bi bi-clock"></i>
+                  <span>24/7 Emergency</span>
+                </div>
+                <div class="badge-item">
+                  <i class="bi bi-star-fill"></i>
+                  <span>4.9/5 Rating</span>
+                </div>
+              </div>
 
-    <!-- Testimoni Carousel Section -->
-    <section id="testimoni" class="section-compact fade-in-element">
-        <h2 class="section-title">Apa Kata Mereka</h2>
-        <div class="carousel-container glass-panel">
-            <button class="carousel-arrow arrow-left" id="prevBtn" aria-label="Previous Testimonial">
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
-            <div class="carousel-track" id="carouselTrack">
-                <div class="testimonial-slide">
-                    <img src="https://picsum.photos/id/64/150/150" alt="User Avatar" class="testi-avatar">
-                    <p class="testi-text">"Sistem Chatbot dari Techno Doct sangat responsif! Saya mendapat kejelasan informasi awal mengenai gejala pusing saya di tengah malam secara rasional."</p>
-                    <h4 class="testi-name">Budi Santoso</h4>
-                    <span class="testi-role">Karyawan Swasta, Jakarta</span>
-                </div>
-                <div class="testimonial-slide">
-                    <img src="https://picsum.photos/id/91/150/150" alt="User Avatar" class="testi-avatar">
-                    <p class="testi-text">"Simulasi konsultasi real-time membantu meredakan kecemasan medis saya sebelum akhirnya mantap pergi menemui dokter spesialis di rumah sakit."</p>
-                    <h4 class="testi-name">Dewi Lestari</h4>
-                    <span class="testi-role">Ibu Rumah Tangga, Bandung</span>
-                </div>
-                <div class="testimonial-slide">
-                    <img src="https://picsum.photos/id/338/150/150" alt="User Avatar" class="testi-avatar">
-                    <p class="testi-text">"Sebuah inovasi inklusif yang menjembatani masyarakat awam dengan dunia medis profesional lewat kemudahan akses teknologi kecerdasan buatan."</p>
-                    <h4 class="testi-name">Dr. Rian Prakoso</h4>
-                    <span class="testi-role">Praktisi Kesehatan, Surabaya</span>
-                </div>
-            </div>
-            <button class="carousel-arrow arrow-right" id="nextBtn" aria-label="Next Testimonial">
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
-            <div class="carousel-dots" id="carouselDots"></div>
-        </div>
-    </section>
+              <h1 data-aos="fade-right" data-aos-delay="300">
+                Excellence in <span class="highlight">Healthcare</span> With Compassionate Care
+              </h1>
 
-    <!-- FAQ Accordion Section -->
-    <section id="faq" class="section-compact fade-in-element">
-        <h2 class="section-title">Pertanyaan Umum (FAQ)</h2>
-        <div class="faq-wrapper">
-            <div class="faq-item glass-panel">
-                <button class="faq-trigger">
-                    <span>Apakah Techno Doct bisa menggantikan diagnosa dokter asli?</span>
-                    <i class="fa-solid fa-chevron-down faq-icon"></i>
-                </button>
-                <div class="faq-content">
-                    <p>Tidak. Platform kami murni bertujuan memberikan saran edukasi awal berbasis kata kunci AI serta simulasi kesiapan mental. Setiap diagnosa medis final tetap wajib dikonsultasikan dengan dokter profesional.</p>
-                </div>
-            </div>
-            <div class="faq-item glass-panel">
-                <button class="faq-trigger">
-                    <span>Apakah layanan konsultasi simulasi ini berbayar?</span>
-                    <i class="fa-solid fa-chevron-down faq-icon"></i>
-                </button>
-                <div class="faq-content">
-                    <p>Untuk saat ini seluruh fitur simulasi chatbot pintar di platform Techno Doct dapat diakses dan digunakan sepenuhnya secara gratis tanpa biaya.</p>
-                </div>
-            </div>
-            <div class="faq-item glass-panel">
-                <button class="faq-trigger">
-                    <span>Bagaimana privasi riwayat obrolan saya dijaga?</span>
-                    <i class="fa-solid fa-chevron-down faq-icon"></i>
-                </button>
-                <div class="faq-content">
-                    <p>Keamanan privasi Anda prioritas utama kami. Obrolan enkripsi otomatis diproses lokal secara langsung dan sistem berkala menghapus logs demi menjaga rahasia data kesehatan pengguna.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+              <p class="hero-description" data-aos="fade-right" data-aos-delay="400">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+              </p>
 
-    <!-- Kontak & Google Maps Section -->
-    <section id="kontak" class="section-compact fade-in-element">
-        <h2 class="section-title">Hubungi Kami</h2>
-        <div class="contact-container">
-            <div class="contact-form-panel glass-panel">
-                <h3 style="margin-bottom: 20px; color: var(--primary);">Kirim Pesan</h3>
-                <form id="contactForm" novalidate>
-                    <div class="form-group">
-                        <label for="name">Nama Lengkap</label>
-                        <input type="text" id="name" class="form-control" placeholder="Masukkan nama Anda">
-                        <div class="error-msg" id="nameError">Nama lengkap wajib diisi.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Alamat Email</label>
-                        <input type="email" id="email" class="form-control" placeholder="nama@email.com">
-                        <div class="error-msg" id="emailError">Format email tidak valid atau kosong.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Pesan Anda</label>
-                        <textarea id="message" class="form-control" rows="4" placeholder="Tuliskan pesan atau pertanyaan Anda di sini..."></textarea>
-                        <div class="error-msg" id="messageError">Pesan minimal berisi 10 karakter.</div>
-                    </div>
-                    <button type="submit" class="cta-btn" style="width: 100%; justify-content: center;">Kirim Sekarang</button>
-                </form>
-            </div>
-            <div class="map-panel glass-panel">
-                <h3 style="color: var(--primary);">Lokasi Kantor</h3>
-                <p style="color: var(--text-muted); font-size: 0.95rem;"><i class="fa-solid fa-location-dot" style="color: var(--accent);"></i> Gedung TechMed Hub Digital, Lt. 5, Kuningan, Jakarta Selatan</p>
-                <div class="map-iframe-wrapper">
-                    <!-- Standard Google Maps Embed Placeholder -->
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.253874013406!2d106.82424367583021!3d-6.23022136101235!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3f4b8f09075%3A0x2d1fd6bb95d66661!2sKuningan%20Epicentrum!5e0!3m2!1sid!2sid!4v1710000000000!5m2!1sid!2sid" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <div class="hero-stats mb-4" data-aos="fade-right" data-aos-delay="500">
+                <div class="stat-item">
+                  <h3><span data-purecounter-start="0" data-purecounter-end="15" data-purecounter-duration="2"
+                      class="purecounter"></span>+</h3>
+                  <p>Years Experience</p>
                 </div>
-            </div>
-        </div>
-    </section>
+                <div class="stat-item">
+                  <h3><span data-purecounter-start="0" data-purecounter-end="5000" data-purecounter-duration="2"
+                      class="purecounter"></span>+</h3>
+                  <p>Patients Treated</p>
+                </div>
+                <div class="stat-item">
+                  <h3><span data-purecounter-start="0" data-purecounter-end="50" data-purecounter-duration="2"
+                      class="purecounter"></span>+</h3>
+                  <p>Medical Experts</p>
+                </div>
+              </div>
 
-    <!-- Multi-Column Footer -->
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <a href="#hero" class="logo" style="margin-bottom: 15px;">
-                    <i class="fa-solid fa-heart-pulse"></i> Techno Doct
+              <div class="hero-actions" data-aos="fade-right" data-aos-delay="600">
+                <a href="login.php" class="btn btn-primary">Book Appointment</a>
+                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="btn btn-outline glightbox">
+                  <i class="bi bi-play-circle me-2"></i>
+                  Watch Our Story
                 </a>
-                <p>Platform terdepan yang berdedikasi memperluas aksesibilitas informasi kesehatan melalui integrasi kecerdasan buatan terpercaya.</p>
-                <div class="social-icons">
-                    <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="social-btn" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="social-btn" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
-                    <a href="#" class="social-btn" aria-label="Linkedin"><i class="fa-brands fa-linkedin-in"></i></a>
+              </div>
+
+              <div class="emergency-contact" data-aos="fade-right" data-aos-delay="700">
+                <div class="emergency-icon">
+                  <i class="bi bi-telephone-fill"></i>
                 </div>
+                <div class="emergency-info">
+                  <small>Emergency Hotline</small>
+                  <strong>+1 (555) 911-2468</strong>
+                </div>
+              </div>
             </div>
-            <div class="footer-col">
-                <h4>Navigasi</h4>
-                <ul class="footer-links">
-                    <li><a href="#hero">Beranda</a></li>
-                    <li><a href="#tentang">Tentang Kami</a></li>
-                    <li><a href="#layanan">Layanan Utama</a></li>
-                    <li><a href="#faq">FAQ</a></li>
-                </ul>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="hero-visual" data-aos="fade-left" data-aos-delay="400">
+              <div class="main-image">
+                <img src="Homepage/assets/img/health/staff-10.webp" alt="Modern Healthcare Facility" class="img-fluid">
+                <div class="floating-card appointment-card">
+                  <div class="card-icon">
+                    <i class="bi bi-calendar-check"></i>
+                  </div>
+                  <div class="card-content">
+                    <h6>Next Available</h6>
+                    <p>Today 2:30 PM</p>
+                    <small>Dr. Sarah Johnson</small>
+                  </div>
+                </div>
+                <div class="floating-card rating-card">
+                  <div class="card-content">
+                    <div class="rating-stars">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+                    <h6>4.9/5</h6>
+                    <small>1,234 Reviews</small>
+                  </div>
+                </div>
+              </div>
+              <div class="background-elements">
+                <div class="element element-1"></div>
+                <div class="element element-2"></div>
+                <div class="element element-3"></div>
+              </div>
             </div>
-            <div class="footer-col">
-                <h4>Legalitas</h4>
-                <ul class="footer-links">
-                    <li><a href="#">Kebijakan Privasi</a></li>
-                    <li><a href="#">Syarat & Ketentuan</a></li>
-                    <li><a href="#">Sanggahan Medis</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Kontak & Bantuan</h4>
-                <p><i class="fa-solid fa-envelope" style="color:var(--accent); margin-right:8px;"></i> support@technodoct.id</p>
-                <p><i class="fa-solid fa-phone" style="color:var(--accent); margin-right:8px;"></i> +62 (21) 555-8921</p>
-                <p><i class="fa-solid fa-clock" style="color:var(--accent); margin-right:8px;"></i> Setiap Hari (24 Jam)</p>
-            </div>
+          </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Techno Doct. Seluruh Hak Cipta Dilindungi.</p>
+
+      </div>
+
+    </section><!-- /Hero Section -->
+
+    <!-- Home About Section -->
+    <section id="home-about" class="home-about section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row align-items-center">
+          <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="200">
+            <div class="about-content">
+              <h2 class="section-heading">Compassionate Care, Advanced Medicine</h2>
+              <p class="lead-text">For over two decades, we've been dedicated to providing exceptional healthcare that
+                combines cutting-edge medical technology with the personal touch our patients deserve.</p>
+
+              <p>Our multidisciplinary team of specialists works collaboratively to ensure every patient receives
+                comprehensive care tailored to their unique needs. From preventive services to complex procedures, we
+                maintain the highest standards of medical excellence while fostering an environment of trust and
+                healing.</p>
+
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="15000"
+                    data-purecounter-duration="1"></div>
+                  <div class="stat-label">Patients Served</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="25"
+                    data-purecounter-duration="1"></div>
+                  <div class="stat-label">Years of Excellence</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="50"
+                    data-purecounter-duration="1"></div>
+                  <div class="stat-label">Medical Specialists</div>
+                </div>
+              </div>
+
+              <div class="cta-section">
+                <a href="Homepage/about.html" class="btn-primary">Learn More About Us</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">
+            <div class="about-visual">
+              <div class="main-image">
+                <img src="Homepage/assets/img/health/facilities-9.webp" alt="Modern medical facility" class="img-fluid">
+              </div>
+              <div class="floating-card">
+                <div class="card-content">
+                  <div class="icon">
+                    <i class="bi bi-heart-pulse"></i>
+                  </div>
+                  <div class="card-text">
+                    <h4>24/7 Emergency Care</h4>
+                    <p>Always here when you need us most</p>
+                  </div>
+                </div>
+              </div>
+              <div class="experience-badge">
+                <div class="badge-content">
+                  <span class="years">25+</span>
+                  <span class="text">Years of Trusted Care</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    </footer>
 
-    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
-    <script>
-        // --- Dark/Light Mode Switcher ---
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = themeToggle.querySelector('i');
+      </div>
 
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            if (currentTheme === 'dark') {
-                document.documentElement.removeAttribute('data-theme');
-                themeIcon.className = 'fa-solid fa-moon';
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                themeIcon.className = 'fa-solid fa-sun';
-            }
-        });
+    </section><!-- /Home About Section -->
 
-        // --- Responsive Mobile Hamburger Menu ---
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
-        const navItems = document.querySelectorAll('.nav-item');
+    <!-- Featured Departments Section -->
+    <section id="featured-departments" class="featured-departments section">
 
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            hamburger.querySelector('i').classList.toggle('fa-bars');
-            hamburger.querySelector('i').classList.toggle('fa-xmark');
-        });
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Featured Departments</h2>
+        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+      </div><!-- End Section Title -->
 
-        // Close menu on link click
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                hamburger.querySelector('i').className = 'fa-solid fa-bars';
-            });
-        });
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        // --- Active Navigation Link on Scroll ---
-        const sections = document.querySelectorAll('header, section');
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 120) {
-                    current = section.getAttribute('id');
-                }
-            });
-            navItems.forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('href').includes(current)) {
-                    item.classList.add('active');
-                }
-            });
-        });
+        <div class="row g-5">
 
-        // --- Scroll Triggered Fade-In Animations ---
-        const animatedElements = document.querySelectorAll('.fade-in-element');
-        const intersectionObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                }
-            });
-        }, { threshold: 0.1 });
+          <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="100">
+            <div class="specialty-card">
+              <div class="specialty-content">
+                <div class="specialty-meta">
+                  <span class="specialty-label">Specialized Care</span>
+                </div>
+                <h3>Cardiovascular Medicine</h3>
+                <p>Advanced diagnostic imaging and interventional procedures for comprehensive heart health management
+                  with personalized treatment protocols.</p>
+                <div class="specialty-features">
+                  <span><i class="bi bi-check-circle-fill"></i>24/7 Emergency Cardiac Care</span>
+                  <span><i class="bi bi-check-circle-fill"></i>Minimally Invasive Procedures</span>
+                </div>
+                <a href="Homepage/department-details.html" class="specialty-link">
+                  Explore Cardiology <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+              <div class="specialty-visual">
+                <img src="Homepage/assets/img/health/cardiology-1.webp" alt="Cardiovascular Medicine" class="img-fluid">
+                <div class="visual-overlay">
+                  <i class="bi bi-heart-pulse"></i>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Specialty Card -->
 
-        animatedElements.forEach(element => intersectionObserver.observe(element));
+          <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="200">
+            <div class="specialty-card">
+              <div class="specialty-content">
+                <div class="specialty-meta">
+                  <span class="specialty-label">Expert Care</span>
+                </div>
+                <h3>Neurological Sciences</h3>
+                <p>Cutting-edge neuroimaging and neurosurgical expertise for complex brain and spinal cord conditions
+                  with innovative treatment approaches.</p>
+                <div class="specialty-features">
+                  <span><i class="bi bi-check-circle-fill"></i>Advanced Brain Imaging</span>
+                  <span><i class="bi bi-check-circle-fill"></i>Robotic Surgery</span>
+                </div>
+                <a href="Homepage/department-details.html" class="specialty-link">
+                  Explore Neurology <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+              <div class="specialty-visual">
+                <img src="Homepage/assets/img/health/neurology-4.webp" alt="Neurological Sciences" class="img-fluid">
+                <div class="visual-overlay">
+                  <i class="bi bi-cpu"></i>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Specialty Card -->
 
-        // --- Testimonial Carousel Mechanism ---
-        const track = document.getElementById('carouselTrack');
-        const slides = Array.from(track.children);
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const dotsContainer = document.getElementById('carouselDots');
-        let currentIndex = 0;
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="department-highlight">
+              <div class="highlight-icon">
+                <i class="bi bi-shield-plus"></i>
+              </div>
+              <h4>Orthopedic Surgery</h4>
+              <p>Comprehensive musculoskeletal care utilizing advanced arthroscopic techniques and joint replacement
+                procedures.</p>
+              <ul class="highlight-list">
+                <li>Sports Medicine</li>
+                <li>Joint Replacement</li>
+                <li>Spine Surgery</li>
+              </ul>
+              <a href="Homepage/department-details.html" class="highlight-cta">Learn More</a>
+            </div>
+          </div><!-- End Department Highlight -->
 
-        // Generate Pagination Dots
-        slides.forEach((_, idx) => {
-            const dot = document.createElement('div');
-            dot.classList.add('dot');
-            if (idx === 0) dot.classList.add('active');
-            dot.addEventListener('click', () => updateCarousel(idx));
-            dotsContainer.appendChild(dot);
-        });
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="department-highlight">
+              <div class="highlight-icon">
+                <i class="bi bi-people"></i>
+              </div>
+              <h4>Pediatric Care</h4>
+              <p>Child-centered healthcare services from newborn to adolescence with family-focused treatment
+                approaches.</p>
+              <ul class="highlight-list">
+                <li>Neonatal Intensive Care</li>
+                <li>Developmental Pediatrics</li>
+                <li>Pediatric Surgery</li>
+              </ul>
+              <a href="Homepage/department-details.html" class="highlight-cta">Learn More</a>
+            </div>
+          </div><!-- End Department Highlight -->
 
-        const dots = Array.from(dotsContainer.children);
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="department-highlight">
+              <div class="highlight-icon">
+                <i class="bi bi-activity"></i>
+              </div>
+              <h4>Cancer Treatment</h4>
+              <p>Multidisciplinary oncology program offering personalized cancer care with latest therapeutic
+                innovations.</p>
+              <ul class="highlight-list">
+                <li>Precision Medicine</li>
+                <li>Immunotherapy</li>
+                <li>Radiation Oncology</li>
+              </ul>
+              <a href="Homepage/department-details.html" class="highlight-cta">Learn More</a>
+            </div>
+          </div><!-- End Department Highlight -->
 
-        function updateCarousel(index) {
-            track.style.transform = `translateX(-${index * 100}%)`;
-            dots[currentIndex].classList.remove('active');
-            dots[index].classList.add('active');
-            currentIndex = index;
-        }
+        </div>
 
-        nextBtn.addEventListener('click', () => {
-            let nextIndex = currentIndex + 1 >= slides.length ? 0 : currentIndex + 1;
-            updateCarousel(nextIndex);
-        });
+        <div class="emergency-banner" data-aos="fade-up" data-aos-delay="400">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <div class="emergency-content">
+                <h3>Emergency Services Available 24/7</h3>
+                <p>Our emergency department is equipped with state-of-the-art technology and staffed by board-certified
+                  emergency physicians ready to provide immediate care.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+              <a href="tel:+15551234567" class="emergency-btn">
+                <i class="bi bi-telephone-fill"></i>
+                Call Emergency: (555) 123-4567
+              </a>
+            </div>
+          </div>
+        </div>
 
-        prevBtn.addEventListener('click', () => {
-            let prevIndex = currentIndex - 1 < 0 ? slides.length - 1 : currentIndex - 1;
-            updateCarousel(prevIndex);
-        });
+      </div>
 
-        // Auto play carousel every 6 seconds
-        setInterval(() => {
-            let nextIndex = currentIndex + 1 >= slides.length ? 0 : currentIndex + 1;
-            updateCarousel(nextIndex);
-        }, 6000);
+    </section><!-- /Featured Departments Section -->
 
-        // --- Accordion FAQ Interactive Mechanism ---
-        const faqItems = document.querySelectorAll('.faq-item');
+    <!-- Featured Services Section -->
+    <section id="featured-services" class="featured-services section">
 
-        faqItems.forEach(item => {
-            const trigger = item.querySelector('.faq-trigger');
-            const content = item.querySelector('.faq-content');
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Featured Services</h2>
+        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+      </div><!-- End Section Title -->
 
-            trigger.addEventListener('click', () => {
-                const isActive = item.classList.contains('active');
-                
-                // Close all other open items
-                faqItems.forEach(otherItem => {
-                    otherItem.classList.remove('active');
-                    otherItem.querySelector('.faq-content').style.maxHeight = null;
-                });
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-                if (!isActive) {
-                    item.classList.add('active');
-                    content.style.maxHeight = content.scrollHeight + "px";
-                }
-            });
-        });
+        <div class="row g-0">
 
-        // --- Form Validation Control ---
-        const contactForm = document.getElementById('contactForm');
+          <div class="col-lg-8" data-aos="fade-right" data-aos-delay="200">
+            <div class="featured-service-main">
+              <div class="service-image-wrapper">
+                <img src="Homepage/assets/img/health/consultation-4.webp" alt="Premier Healthcare Services" class="img-fluid"
+                  loading="lazy">
+                <div class="service-overlay">
+                  <div class="service-badge">
+                    <i class="bi bi-heart-pulse"></i>
+                    <span>Emergency Care</span>
+                  </div>
+                </div>
+              </div>
+              <div class="service-details">
+                <h2>Comprehensive Healthcare Excellence</h2>
+                <p>Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vestibulum ante ipsum primis in faucibus
+                  orci luctus et ultrices posuere cubilia curae donec velit neque.</p>
+                <a href="#!" class="main-cta">Explore Our Services</a>
+              </div>
+            </div>
+          </div>
 
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            let isValid = true;
-            const name = document.getElementById('name');
-            const email = document.getElementById('email');
-            const message = document.getElementById('message');
+          <div class="col-lg-4" data-aos="fade-left" data-aos-delay="300">
+            <div class="services-sidebar">
 
-            // Name validation
-            if (name.value.trim() === "") {
-                document.getElementById('nameError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('nameError').style.display = 'none';
-            }
+              <div class="service-item" data-aos="fade-up" data-aos-delay="400">
+                <div class="service-icon-wrapper">
+                  <i class="bi bi-capsule"></i>
+                </div>
+                <div class="service-info">
+                  <h4>Dermatology Clinic</h4>
+                  <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+                  <a href="#!" class="service-link">Learn More</a>
+                </div>
+              </div>
 
-            // Email validation regex pattern
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailPattern.test(email.value.trim())) {
-                document.getElementById('emailError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('emailError').style.display = 'none';
-            }
+              <div class="service-item" data-aos="fade-up" data-aos-delay="500">
+                <div class="service-icon-wrapper">
+                  <i class="bi bi-bandaid"></i>
+                </div>
+                <div class="service-info">
+                  <h4>Surgery Center</h4>
+                  <p>Donec rutrum congue leo eget malesuada curabitur arcu erat accumsan id imperdiet et porttitor at
+                    sem.</p>
+                  <a href="#!" class="service-link">Learn More</a>
+                </div>
+              </div>
 
-            // Message validation
-            if (message.value.trim().length < 10) {
-                document.getElementById('messageError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('messageError').style.display = 'none';
-            }
+              <div class="service-item" data-aos="fade-up" data-aos-delay="600">
+                <div class="service-icon-wrapper">
+                  <i class="bi bi-activity"></i>
+                </div>
+                <div class="service-info">
+                  <h4>Diagnostics Lab</h4>
+                  <p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui cras ultricies ligula sed
+                    magna.</p>
+                  <a href="#!" class="service-link">Learn More</a>
+                </div>
+              </div>
 
-            // Action on Successful Validation
-            if (isValid) {
-                alert('Terima kasih! Pesan Anda berhasil dikirim ke tim medis Techno Doct.');
-                contactForm.reset();
-            }
-        });
-    </script>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="specialties-grid" data-aos="fade-up" data-aos-delay="300">
+          <div class="row align-items-center">
+
+            <div class="col-lg-3 col-md-6">
+              <div class="specialty-card">
+                <div class="specialty-image">
+                  <img src="Homepage/assets/img/health/maternal-2.webp" alt="Maternal Care" class="img-fluid" loading="lazy">
+                </div>
+                <div class="specialty-content">
+                  <h5>Maternal Care</h5>
+                  <span>Expert pregnancy &amp; delivery support</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+              <div class="specialty-card">
+                <div class="specialty-image">
+                  <img src="Homepage/assets/img/health/vaccination-3.webp" alt="Vaccination" class="img-fluid" loading="lazy">
+                </div>
+                <div class="specialty-content">
+                  <h5>Vaccination</h5>
+                  <span>Complete immunization programs</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+              <div class="specialty-card">
+                <div class="specialty-image">
+                  <img src="Homepage/assets/img/health/emergency-1.webp" alt="Emergency Care" class="img-fluid" loading="lazy">
+                </div>
+                <div class="specialty-content">
+                  <h5>Emergency Care</h5>
+                  <span>24/7 critical care services</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+              <div class="specialty-card">
+                <div class="specialty-image">
+                  <img src="Homepage/assets/img/health/facilities-6.webp" alt="Advanced Tech" class="img-fluid" loading="lazy">
+                </div>
+                <div class="specialty-content">
+                  <h5>Advanced Technology</h5>
+                  <span>State-of-the-art medical equipment</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Featured Services Section -->
+
+    <!-- Find A Doctor Section -->
+    <section id="find-a-doctor" class="find-a-doctor section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Find A Doctor</h2>
+        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row justify-content-center mb-5" data-aos="fade-up" data-aos-delay="200">
+          <div class="col-lg-8 text-center">
+            <div class="search-section">
+              <h3 class="search-title">Find Your Perfect Healthcare Provider</h3>
+              <p class="search-subtitle">Search through our comprehensive directory of experienced medical professionals
+              </p>
+              <form class="search-form" action="#!" method="#">
+                <div class="search-input-group">
+                  <div class="input-wrapper">
+                    <i class="bi bi-person"></i>
+                    <input type="text" class="form-control" name="doctor_name" placeholder="Enter doctor name">
+                  </div>
+                  <div class="select-wrapper">
+                    <i class="bi bi-heart-pulse"></i>
+                    <select class="form-select" name="specialty">
+                      <option value="">All Specialties</option>
+                      <option value="cardiology">Cardiology</option>
+                      <option value="neurology">Neurology</option>
+                      <option value="orthopedics">Orthopedics</option>
+                      <option value="pediatrics">Pediatrics</option>
+                      <option value="dermatology">Dermatology</option>
+                      <option value="oncology">Oncology</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="search-btn">
+                    <i class="bi bi-search"></i>
+                    Find Doctors
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="doctors-grid" data-aos="fade-up" data-aos-delay="300">
+          <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="100">
+            <div class="profile-header">
+              <div class="doctor-avatar">
+                <img src="Homepage/assets/img/health/staff-2.webp" alt="Dr. Amanda Foster" class="img-fluid">
+                <div class="status-indicator available"></div>
+              </div>
+              <div class="doctor-details">
+                <h4>Dr. Amanda Foster</h4>
+                <span class="specialty-tag">Cardiology Specialist</span>
+                <div class="experience-info">
+                  <i class="bi bi-award"></i>
+                  <span>14 years experience</span>
+                </div>
+              </div>
+            </div>
+            <div class="rating-section">
+              <div class="stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+              </div>
+              <span class="rating-score">4.9</span>
+              <span class="review-count">(127 reviews)</span>
+            </div>
+            <div class="action-buttons">
+              <a href="#!" class="btn-secondary">View Details</a>
+              <a href="#!" class="btn-primary">Book Now</a>
+            </div>
+          </div><!-- End Doctor Profile -->
+
+          <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="200">
+            <div class="profile-header">
+              <div class="doctor-avatar">
+                <img src="Homepage/assets/img/health/staff-6.webp" alt="Dr. Marcus Johnson" class="img-fluid">
+                <div class="status-indicator busy"></div>
+              </div>
+              <div class="doctor-details">
+                <h4>Dr. Marcus Johnson</h4>
+                <span class="specialty-tag">Neurology Expert</span>
+                <div class="experience-info">
+                  <i class="bi bi-award"></i>
+                  <span>16 years experience</span>
+                </div>
+              </div>
+            </div>
+            <div class="rating-section">
+              <div class="stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-half"></i>
+              </div>
+              <span class="rating-score">4.8</span>
+              <span class="review-count">(89 reviews)</span>
+            </div>
+            <div class="action-buttons">
+              <a href="#!" class="btn-secondary">View Details</a>
+              <a href="#!" class="btn-primary">Schedule</a>
+            </div>
+          </div><!-- End Doctor Profile -->
+
+          <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="300">
+            <div class="profile-header">
+              <div class="doctor-avatar">
+                <img src="Homepage/assets/img/health/staff-4.webp" alt="Dr. Rachel Williams" class="img-fluid">
+                <div class="status-indicator available"></div>
+              </div>
+              <div class="doctor-details">
+                <h4>Dr. Rachel Williams</h4>
+                <span class="specialty-tag">Pediatrics Care</span>
+                <div class="experience-info">
+                  <i class="bi bi-award"></i>
+                  <span>11 years experience</span>
+                </div>
+              </div>
+            </div>
+            <div class="rating-section">
+              <div class="stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+              </div>
+              <span class="rating-score">5.0</span>
+              <span class="review-count">(203 reviews)</span>
+            </div>
+            <div class="action-buttons">
+              <a href="#!" class="btn-secondary">View Details</a>
+              <a href="#!" class="btn-primary">Book Now</a>
+            </div>
+          </div><!-- End Doctor Profile -->
+
+          <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="400">
+            <div class="profile-header">
+              <div class="doctor-avatar">
+                <img src="Homepage/assets/img/health/staff-8.webp" alt="Dr. David Chen" class="img-fluid">
+                <div class="status-indicator offline"></div>
+              </div>
+              <div class="doctor-details">
+                <h4>Dr. David Chen</h4>
+                <span class="specialty-tag">Orthopedic Surgery</span>
+                <div class="experience-info">
+                  <i class="bi bi-award"></i>
+                  <span>22 years experience</span>
+                </div>
+              </div>
+            </div>
+            <div class="rating-section">
+              <div class="stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-half"></i>
+              </div>
+              <span class="rating-score">4.7</span>
+              <span class="review-count">(156 reviews)</span>
+            </div>
+            <div class="action-buttons">
+              <a href="#!" class="btn-secondary">View Details</a>
+              <a href="#!" class="btn-primary">Schedule</a>
+            </div>
+          </div><!-- End Doctor Profile -->
+
+          <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="500">
+            <div class="profile-header">
+              <div class="doctor-avatar">
+                <img src="Homepage/assets/img/health/staff-11.webp" alt="Dr. Victoria Torres" class="img-fluid">
+                <div class="status-indicator available"></div>
+              </div>
+              <div class="doctor-details">
+                <h4>Dr. Victoria Torres</h4>
+                <span class="specialty-tag">Dermatology Care</span>
+                <div class="experience-info">
+                  <i class="bi bi-award"></i>
+                  <span>9 years experience</span>
+                </div>
+              </div>
+            </div>
+            <div class="rating-section">
+              <div class="stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star"></i>
+              </div>
+              <span class="rating-score">4.5</span>
+              <span class="review-count">(74 reviews)</span>
+            </div>
+            <div class="action-buttons">
+              <a href="#!" class="btn-secondary">View Details</a>
+              <a href="#!" class="btn-primary">Book Now</a>
+            </div>
+          </div><!-- End Doctor Profile -->
+
+          <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="600">
+            <div class="profile-header">
+              <div class="doctor-avatar">
+                <img src="Homepage/assets/img/health/staff-14.webp" alt="Dr. Benjamin Lee" class="img-fluid">
+                <div class="status-indicator available"></div>
+              </div>
+              <div class="doctor-details">
+                <h4>Dr. Benjamin Lee</h4>
+                <span class="specialty-tag">Oncology Treatment</span>
+                <div class="experience-info">
+                  <i class="bi bi-award"></i>
+                  <span>19 years experience</span>
+                </div>
+              </div>
+            </div>
+            <div class="rating-section">
+              <div class="stars">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+              </div>
+              <span class="rating-score">4.9</span>
+              <span class="review-count">(194 reviews)</span>
+            </div>
+            <div class="action-buttons">
+              <a href="#!" class="btn-secondary">View Details</a>
+              <a href="#!" class="btn-primary">Schedule</a>
+            </div>
+          </div><!-- End Doctor Profile -->
+
+        </div>
+
+        <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="700">
+          <a href="Homepage/doctors.html" class="btn-view-all">
+            View All Doctors
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+      </div>
+
+    </section><!-- /Find A Doctor Section -->
+
+    <!-- Call To Action Section -->
+    <section id="call-to-action" class="call-to-action section light-background">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="hero-content">
+          <div class="row align-items-center">
+
+            <div class="col-lg-6">
+              <div class="content-wrapper" data-aos="fade-up" data-aos-delay="200">
+                <h1>Excellence in Medical Care, Every Day</h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore
+                  et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+
+                <div class="cta-wrapper">
+                  <a href="Homepage/appointment.html" class="primary-cta">
+                    <span>Schedule Consultation</span>
+                    <i class="bi bi-arrow-right"></i>
+                  </a>
+                  <a href="Homepage/services.html" class="secondary-cta">
+                    <span>Explore Services</span>
+                    <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="image-container" data-aos="fade-left" data-aos-delay="300">
+                <img src="Homepage/assets/img/health/facilities-9.webp" alt="Medical Excellence" class="img-fluid">
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="features-section">
+
+          <div class="row g-0">
+
+            <div class="col-lg-4">
+              <div class="feature-block" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-icon">
+                  <i class="bi bi-shield-check"></i>
+                </div>
+                <h3>Advanced Technology</h3>
+                <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
+                  laborum.</p>
+              </div>
+            </div>
+
+            <div class="col-lg-4">
+              <div class="feature-block" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-icon">
+                  <i class="bi bi-clock"></i>
+                </div>
+                <h3>24/7 Availability</h3>
+                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur
+                  excepteur.</p>
+              </div>
+            </div>
+
+            <div class="col-lg-4">
+              <div class="feature-block" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-icon">
+                  <i class="bi bi-people"></i>
+                </div>
+                <h3>Expert Team</h3>
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
+                  totam rem.</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="contact-block">
+          <div class="row">
+
+            <div class="col-lg-8">
+              <div class="contact-content" data-aos="fade-up" data-aos-delay="200">
+                <h2>Need Immediate Medical Assistance?</h2>
+                <p>Our emergency response team is available around the clock to provide immediate medical support when
+                  you need it most.</p>
+              </div>
+            </div>
+
+            <div class="col-lg-4">
+              <div class="contact-actions" data-aos="fade-up" data-aos-delay="300">
+                <a href="tel:5551234567" class="emergency-call">
+                  <i class="bi bi-telephone"></i>
+                  <span>(555) 123-4567</span>
+                </a>
+                <a href="Homepage/contact.html" class="contact-link">Find Location</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Call To Action Section -->
+
+  </main>
+
+  <footer id="footer" class="footer-16 footer position-relative">
+
+    <div class="container">
+
+      <div class="footer-main" data-aos="fade-up" data-aos-delay="100">
+        <div class="row align-items-start">
+
+          <div class="col-lg-5">
+            <div class="brand-section">
+              <a href="index.php" class="logo d-flex align-items-center mb-4">
+                <span class="sitename">Clinic</span>
+              </a>
+              <p class="brand-description">Crafting exceptional digital experiences through thoughtful design and
+                innovative solutions that elevate your brand presence.</p>
+
+              <div class="contact-info mt-5">
+                <div class="contact-item">
+                  <i class="bi bi-geo-alt"></i>
+                  <span>123 Creative Boulevard, Design District, NY 10012</span>
+                </div>
+                <div class="contact-item">
+                  <i class="bi bi-telephone"></i>
+                  <span>+1 (555) 987-6543</span>
+                </div>
+                <div class="contact-item">
+                  <i class="bi bi-envelope"></i>
+                  <span>hello@designstudio.com</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <div class="footer-nav-wrapper">
+              <div class="row">
+
+                <div class="col-6 col-lg-3">
+                  <div class="nav-column">
+                    <h6>Studio</h6>
+                    <nav class="footer-nav">
+                      <a href="#!">Our Story</a>
+                      <a href="#!">Design Process</a>
+                      <a href="#!">Portfolio</a>
+                      <a href="#!">Case Studies</a>
+                      <a href="#!">Awards</a>
+                    </nav>
+                  </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                  <div class="nav-column">
+                    <h6>Services</h6>
+                    <nav class="footer-nav">
+                      <a href="#!">Brand Identity</a>
+                      <a href="#!">Web Design</a>
+                      <a href="#!">Mobile Apps</a>
+                      <a href="#!">Digital Strategy</a>
+                      <a href="#!">Consultation</a>
+                    </nav>
+                  </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                  <div class="nav-column">
+                    <h6>Resources</h6>
+                    <nav class="footer-nav">
+                      <a href="#!">Design Blog</a>
+                      <a href="#!">Style Guide</a>
+                      <a href="#!">Free Assets</a>
+                      <a href="#!">Tutorials</a>
+                      <a href="#!">Inspiration</a>
+                    </nav>
+                  </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                  <div class="nav-column">
+                    <h6>Connect</h6>
+                    <nav class="footer-nav">
+                      <a href="#!">Start Project</a>
+                      <a href="#!">Schedule Call</a>
+                      <a href="#!">Join Newsletter</a>
+                      <a href="#!">Follow Updates</a>
+                      <a href="#!">Partnership</a>
+                    </nav>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="bottom-content" data-aos="fade-up" data-aos-delay="300">
+          <div class="row align-items-center">
+
+            <div class="col-lg-6">
+              <div class="copyright">
+                <p>© <span class="sitename">Clinic</span>. All rights reserved.</p>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="legal-links">
+                <a href="#!">Privacy Policy</a>
+                <a href="#!">Terms of Service</a>
+                <a href="#!">Cookie Policy</a>
+                <div class="credits">
+                  <!-- All the links in the footer should remain intact. -->
+                  <!-- You can delete the links only if you've purchased the pro version. -->
+                  <!-- Licensing information: https://bootstrapmade.com/license/ -->
+                  <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+                  Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>. Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#!" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="Homepage/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="Homepage/assets/vendor/php-email-form/validate.js"></script>
+  <script src="Homepage/assets/vendor/aos/aos.js"></script>
+  <script src="Homepage/assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="Homepage/assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="Homepage/assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="Homepage/assets/js/main.js"></script>
+
 </body>
+
 </html>
