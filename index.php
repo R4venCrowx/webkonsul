@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -43,12 +46,7 @@
 <body class="index-page">
 
   <header id="header" class="header fixed-top">
-
-    <div class="topbar d-flex align-items-center dark-background">
-      
-    </div><!-- End Top Bar -->
-
-    <div class="branding d-flex align-items-cente">
+    <div class="branding d-flex align-items-center">
 
       <div class="container position-relative d-flex align-items-center justify-content-between">
         <a href="../index.php" class="logo d-flex align-items-center">
@@ -56,33 +54,32 @@
           <img src="Homepage/assets/img/logo.png" alt=""> 
           <h1 class="sitename">Techno Doct</h1>
         </a>
-
-        <nav id="navmenu" class="navmenu">
+<nav id="navmenu" class="navmenu">
           <ul>
-            <li><a href="../index.php"class="active">Home</a></li>
-            <li><a href="Homepage/about.html">About</a></li>
-            <li><a href="Homepage/doctors.html">Doctors</a></li>
+            <li><a href="../index.php" class="active">Home</a></li>
+            <li><a href="Homepage/about.php">About</a></li>
+            <li><a href="Homepage/doctors.php">Doctors</a></li>
+        <li><a href="<?= isset($_SESSION['sudah_login']) ? 'Homepage/appointment.php' : 'login.php'; ?>">
+    <?= isset($_SESSION['sudah_login']) ? 'Appointment' : 'Appointment'; ?>
+  </a>
+</li>
             <li class="dropdown"><a href="#"><span>More Pages</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <?php if (isset($_SESSION['sudah_login'])) : ?>
-    <li><a href="Homepage/appointment.php">Book Appointment</a></li>
-<?php else : ?>
-    <li><a href="login.php">Book Appointment</a></li>
-<?php endif; ?>
-              <li><a href="Homepage/testimonials.html">Testimonials</a></li>
-              <li><a href="Homepage/faq.html">Frequently Asked Questions</a></li>
-              <li><a href="Homepage/terms.html">Terms</a></li>
-              <li><a href="Homepage/privacy.html">Privacy</a></li>
-              <li><a href="Homepage/404.html">404</a></li>
-            </ul>
+              <ul>
+                <li><a href="Homepage/testimonials.php">Testimonials</a></li>
+                <li><a href="Homepage/faq.php">Frequently Asked Questions</a></li>
+                <li><a href="Homepage/terms.php">Terms</a></li>
+                <li><a href="Homepage/privacy.php">Privacy</a></li>
+                <li><a href="Homepage/404.php">404</a></li>
+              </ul>
             </li>
-            <li><a href="Homepage/contact.html">Contact</a></li>
-          </ul>
+            <li><a href="Homepage/contact.php">Contact</a></li>
+          
+    <li><a href="<?= isset($_SESSION['sudah_login']) ? 'logout.php' : 'login.php'; ?>">
+      <?= isset($_SESSION['sudah_login']) ? 'Logout' : 'Login'; ?>
+    </a></li></ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
-
       </div>
-
     </div>
 
   </header>
@@ -140,11 +137,8 @@
               </div>
 
               <div class="hero-actions" data-aos="fade-right" data-aos-delay="600">
-                <a href="login.php" class="btn btn-primary">Book Appointment</a>
-                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="btn btn-outline glightbox">
-                  <i class="bi bi-play-circle me-2"></i>
-                  Watch Our Story
-                </a>
+                <a href="homepage/appointment.php" class="btn btn-primary">Book Appointment</a>
+
               </div>
 
               <div class="emergency-contact" data-aos="fade-right" data-aos-delay="700">
@@ -358,217 +352,6 @@
 
     </section><!-- /Featured Departments Section -->
 
-    <!-- Featured Services Section -->
-    <section id="featured-services" class="featured-services section">
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Featured Services</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-      </div><!-- End Section Title -->
- <!-- Doctors Section -->
-    <section id="doctors" class="doctors section">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row gy-4">
-
-          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="doctor-card">
-              <div class="doctor-image">
-                <img src="assets/img/health/staff-1.webp" alt="Dr. Marcus Johnson" class="img-fluid">
-                <div class="doctor-overlay">
-                  <div class="social-links">
-                    <a href="#!"><i class="bi bi-linkedin"></i></a>
-                    <a href="#!"><i class="bi bi-envelope"></i></a>
-                    <a href="#!"><i class="bi bi-phone"></i></a>
-                  </div>
-                </div>
-              </div>
-              <div class="doctor-content">
-                <h4>Dr. Marcus Johnson</h4>
-                <span class="specialty">Cardiologist</span>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore
-                  et dolore magna aliqua.</p>
-                <div class="doctor-meta">
-                  <div class="experience">
-                    <i class="bi bi-award"></i>
-                    <span>15+ Years Experience</span>
-                  </div>
-                  <div class="department">
-                    <i class="bi bi-building"></i>
-                    <span>Cardiology Dept.</span>
-                  </div>
-                </div>
-                <a href="appointment.html" class="btn-appointment">Book Appointment</a>
-              </div>
-            </div>
-          </div><!-- End Doctor Card -->
-
-          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="doctor-card">
-              <div class="doctor-image">
-                <img src="assets/img/health/staff-2.webp" alt="Dr. Sarah Williams" class="img-fluid">
-                <div class="doctor-overlay">
-                  <div class="social-links">
-                    <a href="#!"><i class="bi bi-linkedin"></i></a>
-                    <a href="#!"><i class="bi bi-envelope"></i></a>
-                    <a href="#!"><i class="bi bi-phone"></i></a>
-                  </div>
-                </div>
-              </div>
-              <div class="doctor-content">
-                <h4>Dr. Sarah Williams</h4>
-                <span class="specialty">Neurologist</span>
-                <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                  consequat.</p>
-                <div class="doctor-meta">
-                  <div class="experience">
-                    <i class="bi bi-award"></i>
-                    <span>12+ Years Experience</span>
-                  </div>
-                  <div class="department">
-                    <i class="bi bi-building"></i>
-                    <span>Neurology Dept.</span>
-                  </div>
-                </div>
-                <a href="appointment.html" class="btn-appointment">Book Appointment</a>
-              </div>
-            </div>
-          </div><!-- End Doctor Card -->
-
-          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="doctor-card">
-              <div class="doctor-image">
-                <img src="assets/img/health/staff-3.webp" alt="Dr. Michael Chen" class="img-fluid">
-                <div class="doctor-overlay">
-                  <div class="social-links">
-                    <a href="#!"><i class="bi bi-linkedin"></i></a>
-                    <a href="#!"><i class="bi bi-envelope"></i></a>
-                    <a href="#!"><i class="bi bi-phone"></i></a>
-                  </div>
-                </div>
-              </div>
-              <div class="doctor-content">
-                <h4>Dr. Michael Chen</h4>
-                <span class="specialty">Orthopedic Surgeon</span>
-                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                  pariatur.</p>
-                <div class="doctor-meta">
-                  <div class="experience">
-                    <i class="bi bi-award"></i>
-                    <span>18+ Years Experience</span>
-                  </div>
-                  <div class="department">
-                    <i class="bi bi-building"></i>
-                    <span>Orthopedics Dept.</span>
-                  </div>
-                </div>
-                <a href="appointment.html" class="btn-appointment">Book Appointment</a>
-              </div>
-            </div>
-          </div><!-- End Doctor Card -->
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-              <div class="doctor-details">
-                <h4>Dr. Amanda Foster</h4>
-                <span class="specialty-tag">Cardiology Specialist</span>
-                <div class="experience-info">
-                  <i class="bi bi-award"></i>
-                  <span>14 years experience</span>
-                </div>
-              </div>
-            </div>
-            <div class="rating-section">
-              <div class="stars">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-              </div>
-              <span class="rating-score">4.9</span>
-              <span class="review-count">(127 reviews)</span>
-            </div>
-            <div class="action-buttons">
-              <a href="#!" class="btn-secondary">View Details</a>
-              <a href="#!" class="btn-primary">Book Now</a>
-            </div>
-          </div><!-- End Doctor Profile -->
-
-          <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="200">
-            <div class="profile-header">
-              <div class="doctor-avatar">
-                <img src="Homepage/assets/img/health/staff-6.webp" alt="Dr. Marcus Johnson" class="img-fluid">
-                <div class="status-indicator busy"></div>
-              </div>
-              <div class="doctor-details">
-                <h4>Dr. Marcus Johnson</h4>
-                <span class="specialty-tag">Neurology Expert</span>
-                <div class="experience-info">
-                  <i class="bi bi-award"></i>
-                  <span>16 years experience</span>
-                </div>
-              </div>
-            </div>
-            <div class="rating-section">
-              <div class="stars">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-half"></i>
-              </div>
-              <span class="rating-score">4.8</span>
-              <span class="review-count">(89 reviews)</span>
-            </div>
-            <div class="action-buttons">
-              <a href="#!" class="btn-secondary">View Details</a>
-              <a href="#!" class="btn-primary">Schedule</a>
-            </div>
-          </div><!-- End Doctor Profile -->
-
-          <div class="doctor-profile" data-aos="zoom-in" data-aos-delay="300">
-            <div class="profile-header">
-              <div class="doctor-avatar">
-                <img src="Homepage/assets/img/health/staff-4.webp" alt="Dr. Rachel Williams" class="img-fluid">
-                <div class="status-indicator available"></div>
-              </div>
-              <div class="doctor-details">
-                <h4>Dr. Rachel Williams</h4>
-                <span class="specialty-tag">Pediatrics Care</span>
-                <div class="experience-info">
-                  <i class="bi bi-award"></i>
-                  <span>11 years experience</span>
-                </div>
-              </div>
-            </div>
-            <div class="rating-section">
-              <div class="stars">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-              </div>
-              <span class="rating-score">5.0</span>
-              <span class="review-count">(203 reviews)</span>
-            </div>
-            <div class="action-buttons">
-              <a href="#!" class="btn-secondary">View Details</a>
-              <a href="#!" class="btn-primary">Book Now</a>
-            </div>
-          </div><!-- End Doctor Profile -->
-
-        <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="700">
-          <a href="Homepage/doctors.html" class="btn-view-all">
-            View All Doctors
-            <i class="bi bi-arrow-right"></i>
-          </a>
-        </div>
-
-      </div>
-
-    </section><!-- /Find A Doctor Section -->
-
     <!-- Call To Action Section -->
     <section id="call-to-action" class="call-to-action section light-background">
 
@@ -645,36 +428,6 @@
           </div>
 
         </div>
-
-        <div class="contact-block">
-          <div class="row">
-
-            <div class="col-lg-8">
-              <div class="contact-content" data-aos="fade-up" data-aos-delay="200">
-                <h2>Need Immediate Medical Assistance?</h2>
-                <p>Our emergency response team is available around the clock to provide immediate medical support when
-                  you need it most.</p>
-              </div>
-            </div>
-
-            <div class="col-lg-4">
-              <div class="contact-actions" data-aos="fade-up" data-aos-delay="300">
-                <a href="tel:5551234567" class="emergency-call">
-                  <i class="bi bi-telephone"></i>
-                  <span>(555) 123-4567</span>
-                </a>
-                <a href="Homepage/contact.html" class="contact-link">Find Location</a>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-
-    </section><!-- /Call To Action Section -->
-
-  </main>
 
   <footer id="footer" class="footer-16 footer position-relative">
 
@@ -827,11 +580,4 @@
 </body>
 
 </html>
-<?php 
-session_start(); 
-if (isset($_SESSION['sudah_login'])) {
-    echo '<li><a href="appointment.php" class="active">Appointment</a></li>';
-} else {
-    echo '<li><a href="../login.php">Book Appointment</a></li>';
-}
-?>
+
